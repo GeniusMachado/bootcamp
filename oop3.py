@@ -1,5 +1,5 @@
 print("Hello World!")
 def anamoly():
-      pass
+      print("testing")
 def anatoly*():
     pass
