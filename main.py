@@ -45,7 +45,7 @@ create_db_and_tables()
 
 @app.get("/")
 def read_root():
-    return "Welcome to the Persistent Screening Bot"
+    return "Welcome to the Persistent Screening Bot and I am configured to reload upon codechanges with uvicorn"
 
 # --- THE NEW ENDPOINT ---
 @app.post("/screen-candidate/")
