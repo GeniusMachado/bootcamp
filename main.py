@@ -1,8 +1,32 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlmodel import SQLModel, create_engine, Session, select
 from schemas import Candidate
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = FastAPI()
+
+security = HTTPBasic()
+
+
+# --- SECURITY FUNCTION ---
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = os.getenv("ADMIN_USER")
+    correct_password = os.getenv("ADMIN_PASSWORD")
+    # -----------------------------
+    # Compare what they sent vs. the hardcoded secret
+    # (Note: In Week 2, we will move these secrets to a database)
+    if credentials.username != correct_username or credentials.password != correct_password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
 
 # --- DATABASE SETUP ---
 # This creates a file named "database.db" in your folder
@@ -71,17 +95,17 @@ def list_candidates():
         return results
 
 @app.delete("/candidates/{candidate_id}")
-def delete_candidate(candidate_id: int):
+def delete_candidate(candidate_id: int, username: str = Depends(verify_credentials)):
     with Session(engine) as session:
         # 1. Find the candidate by ID
         candidate = session.get(Candidate, candidate_id)
-        
+
         # 2. If they don't exist, stop
         if not candidate:
             return {"error": "Candidate not found"}
-        
+
         # 3. Delete them
         session.delete(candidate)
         session.commit()
-        
-        return {"ok": True, "message": f"Candidate {candidate_id} has been deleted."}
+
+        return {"ok": True, "message": f"Candidate {candidate_id} has been deleted by {username}."}
