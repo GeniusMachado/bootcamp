@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 5. Copy all our code (main.py, schemas.py, .env) into the container
 COPY . .
 
-# 6. Tell the world that this container listens on port 8000
+# 6. Tell the world that this container listens on port 8007
 EXPOSE 8007
 
 # 7. The command to run when the container starts
