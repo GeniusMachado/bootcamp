@@ -5,7 +5,8 @@ gc.disable()
 
 class garbage_collector:
     def __init__(self):
-        self.data = [i for i in range(1000000)]
+        self.data = [i for i in range(100000)]
+      #  print(self.data)
     def __del__(self):
         print("Instance is being destroyed (sys.getrefcount() reached zero).")
         del self.data
